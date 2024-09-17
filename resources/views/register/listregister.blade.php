@@ -6,9 +6,9 @@
         width: 100% !important;
     }
 </style>
-<div class="container mt-5">
+<div class="container mt-2">
     <div id="formtable">
-        <h2>User Table</h2>
+        <h5>User Table</h5>
         <div class="row mb-3">
             <div class="col-md-3">
                 <input type="date" id="startDate" class="form-control" placeholder="Start Date">
