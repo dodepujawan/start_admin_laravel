@@ -128,7 +128,7 @@ class RegisterController extends Controller
 
         $user = Auth::user();
 
-        $allowedRoles = ['programmer', 'admin'];
+        $allowedRoles = ['programmer', 'super_admin'];
         if (!in_array($user->roles, $allowedRoles)) {
             return response()->json(['message' => 'Akses ditolak'], 403);
         }

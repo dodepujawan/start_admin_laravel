@@ -21,6 +21,7 @@
     {{-- <link href="css/sb-admin-2.min.css" rel="stylesheet"> --}}
     <link href="{{ asset('assets/start_admin/css/sb-admin-2.min.css') }}" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
 </head>
 
@@ -108,9 +109,13 @@
     <!-- Page level custom scripts -->
     {{-- <script src="js/demo/chart-area-demo.js"></script> --}}
     <script src="{{ asset('assets/start_admin/js/demo/chart-area-demo.js') }}"></script>
+
     {{-- <script src="js/demo/chart-pie-demo.js"></script> --}}
     <script src="{{ asset('assets/start_admin/js/demo/chart-pie-demo.js') }}"></script>
+
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     @yield('footer')
 </body>
 

@@ -1,5 +1,4 @@
 {{-- <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" /> --}}
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <style>
 .product-info {
   display: flex;
@@ -109,7 +108,6 @@ h5 {
     <button type="submit" class="btn btn-primary mt-2" id="save_table" style="float: right;">Submit</button>
 </div>
 {{-- <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script> --}}
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
 $(document).ready(function(){
 // ================================= Select Barang ===========================================

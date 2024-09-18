@@ -51,7 +51,7 @@
                 </a>
                 @php
                 $user = Auth::user();
-                $allowedRoles = ['programmer', 'admin'];
+                $allowedRoles = ['programmer', 'super_admin'];
                 @endphp
 
                 @if (in_array($user->roles, $allowedRoles))
