@@ -22,7 +22,9 @@
     <link href="{{ asset('assets/start_admin/css/sb-admin-2.min.css') }}" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-
+    {{-- Select2 Styling --}}
+    {{-- <link href="{{ asset('assets/select2/select2.css') }}" rel="stylesheet"> --}}
+    <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap4-theme@1.0.0/dist/select2-bootstrap4.min.css" rel="stylesheet">
 </head>
 
 <body id="page-top">
@@ -116,7 +118,41 @@
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/select2-bootstrap4-theme@1.0.0/Gruntfile.min.js"></script>
     @yield('footer')
 </body>
 
 </html>
+{{-- Fungsi Sidebar Auto Close Ketika Klik Body --}}
+<script>
+$(document).ready(function() {
+    // Handle click inside the nav link to toggle collapse for any nav-link
+    $('.nav-link').on('click', function(event) {
+        event.preventDefault();  // Prevent default link behavior
+        var target = $(this).data('target');
+
+        // Collapse the target element
+        $(target).collapse('toggle');
+
+        // Toggle aria-expanded attribute
+        var expanded = $(this).attr('aria-expanded') === 'true';
+        $(this).attr('aria-expanded', !expanded);
+
+        // Close other opened collapses
+        $('.collapse').not(target).collapse('hide');
+        $('.nav-link').not(this).attr('aria-expanded', 'false');
+    });
+
+    // Close the collapse if click outside the sidebar (on body)
+    $(document).on('click', function(event) {
+        var target = $(event.target);
+
+        // Check if the click is outside of both the nav-link and collapse items
+        if (!target.closest('.nav-item').length) {
+            $('.collapse').collapse('hide');
+            $('.nav-link').attr('aria-expanded', 'false');
+        }
+    });
+});
+</script>

@@ -141,7 +141,8 @@ $(document).ready(function(){
         },
         placeholder: 'Pilih Barang',
         minimumInputLength: 1,
-        templateResult: formatBarang
+        templateResult: formatBarang,
+        theme: "bootstrap4"
     });
     // ### fungsi untuk format text select2
     function formatBarang(barang) {
