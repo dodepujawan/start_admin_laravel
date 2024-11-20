@@ -19,7 +19,7 @@
                 {{session('message')}}
             </div>
             @endif
-            <h3 id="message"></h3>
+            <h3 id="message_register"></h3>
             <form action="#" id="registerForm" method="post">
             @csrf
                 <div class="form-group">
@@ -43,7 +43,7 @@
                    <select name="role" id="role" class="form-control">
                         <option value="AD">Admin</option>
                         <option value="ST">Staff</option>
-                        <option value="GS">Guest</option>
+                        <option value="CS">Customer</option>
                    </select>
                 </div>
                 <button type="submit" class="btn btn-primary btn-block"><i class="fa fa-user"></i> Register</button>
@@ -109,7 +109,7 @@ $(document).ready(function() {
                 role: $('#role').val()
             },
             success: function(response) {
-                $('#message').html('<p>' + response.pesan + '</p>');
+                $('#message_register').html('<p>' + response.pesan + '</p>');
                 if (response.pesan === 'Register Berhasil. Akun Anda sudah Aktif.') {
                     $('#registerForm')[0].reset();
                     var role = "AD";
@@ -129,7 +129,7 @@ $(document).ready(function() {
             },
             error: function(response) {
                 console.error(response.responseJSON.pesan);
-                $('#message').html('<p>' + response.responseJSON.pesan + '</p>');
+                $('#message_register').html('<p>' + response.responseJSON.pesan + '</p>');
             }
         });
     });

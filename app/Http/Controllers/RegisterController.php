@@ -222,7 +222,7 @@ class RegisterController extends Controller
         $lastUser = DB::table('users')
             ->where('user_id', 'LIKE', $role . '%')
             ->orderBy('user_id', 'desc')
-            // ->lockForUpdate() // Mengunci baris yang sedang dibaca(mencegah update dengan 2 kode yang sama)
+            ->lockForUpdate() // Mengunci baris yang sedang dibaca(mencegah update dengan 2 kode yang sama)
             ->first();
 
         if ($lastUser) {

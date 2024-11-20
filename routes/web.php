@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CabangController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\RegisterController;
@@ -44,6 +45,12 @@ Route::prefix('transaksi')->middleware('auth')->group(function () {
     Route::get('/', [TransaksiController::class, 'index'])->name('index_transaksi');
     Route::get('/api/barangs', [TransaksiController::class, 'get_barangs'])->name('get_barangs');
 
+});
+
+Route::prefix('cabang')->middleware('auth')->group(function () {
+    Route::get('/', [CabangController::class, 'index'])->name('index_cabang');
+    Route::get('/cabang_id', [CabangController::class, 'generate_cabang_id'])->name('generate_cabang_id');
+    Route::post('/store', [CabangController::class, 'store'])->name('store_cabang');
 });
 
 Route::prefix('home')->group(function () {

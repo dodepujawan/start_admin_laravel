@@ -15,10 +15,10 @@ $(document).ready(function() {
 // ========================= Edit Register ======================================
     $(document).on('click', '.dropdown-item.edit-register', function(e) {
         e.preventDefault();
-        loadEditRegisterForm();
+        load_edit_registerForm();
     });
 
-    function loadEditRegisterForm() {
+    function load_edit_registerForm() {
         $.ajax({
             url: '{{ route('editregister') }}', // Route to load the form
             type: 'GET',
@@ -35,10 +35,10 @@ $(document).ready(function() {
 // ======================== List Register ============================================
     $(document).on('click', '.dropdown-item.list-register', function(e) {
         e.preventDefault();
-        loadListRegisterForm();
+        load_list_register_form();
     });
 
-    function loadListRegisterForm(){
+    function load_list_register_form(){
         $.ajax({
             url: '{{ route('listregister') }}',
             success: function(response) {
@@ -54,10 +54,10 @@ $(document).ready(function() {
 // ========================= Main Transaksi ======================================
     $(document).on('click', '.main-sidebar #main_transaksi_link', function(e) {
             e.preventDefault();
-            loadMainTransaksilink();
+            load_main_transaksi_link();
         });
 
-    function loadMainTransaksilink() {
+    function load_main_transaksi_link() {
         $.ajax({
             url: '{{ route('index_transaksi') }}',
             type: 'GET',
@@ -70,6 +70,26 @@ $(document).ready(function() {
         });
     }
 // ========================= End Of Main Transaksi ======================================
+
+// ========================= Create Cabang ======================================
+$(document).on('click', '.dropdown-item.cabang-create', function(e) {
+        e.preventDefault();
+        load_create_cabang_form();
+    });
+
+    function load_create_cabang_form() {
+        $.ajax({
+            url: '{{ route('index_cabang') }}', // Route to load the form
+            type: 'GET',
+            success: function(response) {
+                $('.master-page').html(response);
+            },
+            error: function() {
+                $('.master-page').html('<p>Error loading form.</p>');
+            }
+        });
+    }
+// ========================= End Of Edit Register ======================================
 
 });
 </script>

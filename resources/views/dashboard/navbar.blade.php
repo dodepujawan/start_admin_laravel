@@ -49,6 +49,7 @@
                     <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
                     Edit Register
                 </a>
+                {{-- Edit List Register --}}
                 @php
                 $user = Auth::user();
                 $allowedRoles = ['programmer', 'super_admin'];
@@ -60,6 +61,19 @@
                     List Register
                 </a>
                 @endif
+                {{-- Create Cabang --}}
+                @php
+                $user = Auth::user();
+                $allowedRoles = ['programmer', 'super_admin'];
+                @endphp
+
+                @if (in_array($user->roles, $allowedRoles))
+                <a class="dropdown-item cabang-create" href="#">
+                    <i class="fas fa-address-book fa-sm fa-fw mr-2 text-gray-400"></i>
+                    Create Cabang
+                </a>
+                @endif
+
                 <a class="dropdown-item" href="#">
                     <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
                     Settings
