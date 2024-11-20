@@ -48,7 +48,8 @@
                 </div>
                 <button type="submit" class="btn btn-primary btn-block"><i class="fa fa-user"></i> Register</button>
                 <hr>
-                <p class="text-center">Sudah punya akun silahkan <a href="{{ route('login') }}">Login Disini!</a></p>
+                {{-- <p class="text-center">Sudah punya akun silahkan <a href="{{ route('login') }}">Login Disini!</a></p> --}}
+                <p class="text-center">Kembali ke hal <a href="{{ route('index') }}">Dashboard !</a></p>
             </form>
         </div>
     </div>

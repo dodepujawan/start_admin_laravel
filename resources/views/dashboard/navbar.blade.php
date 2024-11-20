@@ -45,6 +45,10 @@
             <!-- Dropdown - User Information -->
             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
                 aria-labelledby="userDropdown">
+                <a class="dropdown-item create-register" href="{{route('register')}}">
+                    <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                    Create Register
+                </a>
                 <a class="dropdown-item edit-register" href="#">
                     <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
                     Edit Register
@@ -61,6 +65,7 @@
                     List Register
                 </a>
                 @endif
+                <div class="dropdown-divider"></div>
                 {{-- Create Cabang --}}
                 @php
                 $user = Auth::user();

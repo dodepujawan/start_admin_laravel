@@ -42,9 +42,9 @@ class CabangController extends Controller
 
         try {
             $validatedData = $request->validate([
-                'nama' => 'required|string|max:255',
-                'alamat' => 'required|string|max:255',
-                'telp' => 'required|string|max:255',
+                'nama_cabang' => 'required|string|max:255',
+                'alamat_cabang' => 'required|string|max:255',
+                'telp_cabang' => 'required|string|max:255',
             ]);
 
             $role = 'TAP';
@@ -145,7 +145,7 @@ class CabangController extends Controller
 
         if ($lastUser) {
             // 1. Ambil Data user_id dari Objek, 2.strlen menghitung panjang string, substr memotong string berarti disini dipotong 2 karena nilai strlen role =2 _> substr('AD0005', 2) maka didapat nilai 0005. lalu int mendapat nilai integer disini berarti bernilai 5
-            $lastNumber = (int) substr($lastUser->user_id, strlen($role));
+            $lastNumber = (int) substr($lastUser->cabang_id, strlen($role));
             $newNumber = $lastNumber + 1;
         } else {
             $newNumber = 1;

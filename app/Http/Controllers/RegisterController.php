@@ -36,13 +36,13 @@ class RegisterController extends Controller
             $roleMapping = [
                 'AD' => 'admin',
                 'ST' => 'staff',
-                'GS' => 'guest',
+                'CS' => 'customer',
             ];
 
             $role = $request->role;
 
             // Konversi nilai role menggunakan mapping, apabila tidak ada ubah nilai jadi guest
-            $roleName = $roleMapping[$role] ?? 'guest';
+            $roleName = $roleMapping[$role] ?? 'customer';
 
             // Buat request untuk generate_user_id
             $generateRequest = new Request(['role' => $role]);
@@ -134,7 +134,18 @@ class RegisterController extends Controller
         }
 
         // Jika pengguna memiliki peran yang sesuai, lanjutkan dengan query
-        $query = DB::table('users');
+        // Jika tidak ada penambahan spesifik perti CAST untuk date pakai ini -> $query = DB::table('users');
+        $query = DB::table('users')
+        ->select([
+            'users.id',
+            'users.email',
+            'users.name',
+            'users.roles',
+            'users.rcabang',
+            'cabangs.nama as cabang_name', // Mengambil nama cabang dari tabel cabangs
+            DB::raw('DATE(users.created_at) as created_at') // Format created_at
+        ])
+        ->leftJoin('cabangs', 'users.rcabang', '=', 'cabangs.cabang_id');
 
         if ($request->has('startDate') && $request->startDate) {
             $query->where('created_at', '>=', $request->startDate);
@@ -147,8 +158,8 @@ class RegisterController extends Controller
         if ($request->has('searchText') && $request->searchText) {
             $query->where(function($q) use ($request) {
                 $q->where('email', 'like', '%' . $request->searchText . '%')
-                  ->orWhere('name', 'like', '%' . $request->searchText . '%')
-                  ->orWhere('roles', 'like', '%' . $request->searchText . '%');
+                ->orWhere('name', 'like', '%' . $request->searchText . '%')
+                ->orWhere('roles', 'like', '%' . $request->searchText . '%');
             });
         }
 
@@ -158,6 +169,7 @@ class RegisterController extends Controller
             'data' => $users
         ]);
     }
+
 
 
     public function edit_list_register($id){

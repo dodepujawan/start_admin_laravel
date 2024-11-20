@@ -36,18 +36,21 @@ $(document).ready(function() {
     });
 
     // ### Panggil  Cabang Id
-    $.ajax({
-            url: '{{ route("generate_cabang_id") }}',
-            type: 'GET',
-            success: function(response) {
-                console.log('test:' + response)
-                // Tampilkan user_id di input
-                $('#id_cabang').val(response.cabang_id);
-            },
-            error: function(xhr, status, error) {
-                console.error('Error: ' + error);
-            }
-    });
+    generate_cabang_id();
+    function generate_cabang_id(){
+        $.ajax({
+                url: '{{ route("generate_cabang_id") }}',
+                type: 'GET',
+                success: function(response) {
+                    console.log('test:' + response)
+                    // Tampilkan user_id di input
+                    $('#id_cabang').val(response.cabang_id);
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error: ' + error);
+                }
+        });
+    }
 
     // ### Submit Cabang
     $('#cabang_form').on('submit', function(e) {
@@ -66,6 +69,7 @@ $(document).ready(function() {
                 $('#message_cabang').html('<p>' + response.pesan + '</p>');
                 if (response.pesan === 'Register Berhasil. Cabang Baru sudah Aktif.') {
                     $('#cabang_form')[0].reset();
+                    generate_cabang_id();
                 }
             },
             error: function(response) {

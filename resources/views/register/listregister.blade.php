@@ -30,6 +30,7 @@
                         <th>Email</th>
                         <th>Name</th>
                         <th>Roles</th>
+                        <th>Branch</th>
                         <th>Joined At</th>
                         <th>Actions</th>
                     </tr>
@@ -42,7 +43,7 @@
     </div>
 
     <div id="formedit" class="d-none">
-        <div class="container master-edit-register"><br>
+        <div class="container master-edit-register d-flex justify-content-center align-items-center"><br>
             <div class="col-md-6 col-md-offset-3">
                 <h2 class="text-center">FORM EDIT USER</h2>
                 <hr>
@@ -99,6 +100,12 @@ $(document).ready(function() {
                 { data: 'email' },
                 { data: 'name' },
                 { data: 'roles' },
+                {
+                  data: 'cabang_name',
+                  render: function(data, type, row) {
+                     return data ? data : '-'; // Jika cabang_name kosong, tampilkan '-'
+                  }
+                },
                 { data: 'created_at' },
                 {
                     data: null,
@@ -111,12 +118,12 @@ $(document).ready(function() {
             paging: true,
             info: false,
             scrollY: '50vh',  // Menambahkan scrolling vertikal
-        scrollCollapse: true,
-        scrollX: true,
-        fixedHeader: {
-            header: true,
-            footer: false
-        }
+            scrollCollapse: true,
+            scrollX: true,
+            fixedHeader: {
+                header: true,
+                footer: false
+            }
         });
             $('#filterBtn').on('click', function() {
                 table.ajax.reload();
@@ -134,7 +141,7 @@ $(document).ready(function() {
             url: url, // Route to load the form
             type: 'GET',
             success: function(data) {
-                $('#id').val(data.id);
+                $('#id').val(data.user_id);
                 $('#email').val(data.email);
                 $('#name').val(data.name);
                 $('#roles').val(data.roles);
