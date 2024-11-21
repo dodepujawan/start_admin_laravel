@@ -70,7 +70,18 @@
                     </div>
                     <div class="form-group">
                         <label><i class="fa fa-address-book"></i> Role</label>
-                        <input type="text" name="roles" id="roles" class="form-control" value="" readonly>
+                        <input type="hidden" name="roles_flag" id="roles_flag" class="form-control" value="" readonly>
+                        <select name="roles_list_reg" id="roles_list_reg" class="form-control">
+                            <option value="AD">Admin</option>
+                            <option value="ST">Staff</option>
+                            <option value="CS">Customer</option>
+                       </select>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fa fa-address-book"></i> Cabang</label>
+                        <input type="text" name="cabang_flag" id="cabang_flag" class="form-control" value="" readonly>
+                        <select name="cabang_list_reg" id="cabang_list_reg" class="form-control">
+                        </select>
                     </div>
                     <button type="submit" class="btn btn-primary btn-block" id="but_edit_list_register"><i class="fa fa-user"></i> Update</button>
                     <hr>
@@ -144,8 +155,11 @@ $(document).ready(function() {
                 $('#id').val(data.user_id);
                 $('#email').val(data.email);
                 $('#name').val(data.name);
-                $('#roles').val(data.roles);
-
+                $('#roles_flag').val(data.roles);
+                $('#cabang_flag').val(data.rcabang);
+                calling_roles_first();
+                select_cabang();
+                $('#cabang_list_reg').val(data.rcabang);
                 // Tampilkan form
                 $('#formtable').hide();
                 $('#formedit').removeClass('d-none');
@@ -155,6 +169,37 @@ $(document).ready(function() {
             }
         });
     });
+    function calling_roles_first(){
+        var hidden_role = $('#roles_flag').val();
+        if (hidden_role === 'admin')
+        {
+            $('#roles_list_reg').val("AD");
+        }else if(hidden_role === 'staff')
+        {
+            $('#roles_list_reg').val("ST");
+        }else if(hidden_role === 'customer'){
+            $('#roles_list_reg').val("CS");
+        }
+    }
+
+    function select_cabang(){
+        $.ajax({
+            url: "{{ route('get_cabang_api') }}",
+            dataType: 'json',
+            success: function(cabang_data) {
+                // Menambahkan opsi cabang ke dalam select
+                cabang_data.forEach(function(item) {
+                    $('#cabang_list_reg').append(new Option(item.nama, item.cabang_id));
+                });
+            }
+        });
+    }
+
+    function pick_cabang(){
+        var pilih_cabang_auto = $('#cabang_flag').val();
+        $('#cabang_list_reg').val(pilih_cabang_auto);
+    }
+
     // ========================== end of edit list user ===============================
     // ========================== update list user ===============================
     $(document).off('submit', '#editListRegisterForm');

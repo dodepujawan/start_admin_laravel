@@ -128,7 +128,7 @@ class RegisterController extends Controller
 
         $user = Auth::user();
 
-        $allowedRoles = ['programmer', 'super_admin'];
+        $allowedRoles = ['admin'];
         if (!in_array($user->roles, $allowedRoles)) {
             return response()->json(['message' => 'Akses ditolak'], 403);
         }
@@ -173,8 +173,7 @@ class RegisterController extends Controller
 
 
     public function edit_list_register($id){
-        // Fetch user data
-        $user = User::find($id);// Assuming session has user id
+        $user = User::find($id);
         return response()->json($user);
     }
 
@@ -188,7 +187,7 @@ class RegisterController extends Controller
                 'email' => 'required|email',
                 'name' => 'required|string|max:255',
                 'password' => 'nullable|string|min:8',
-                'roles' => 'required|string|max:255',
+                'roles_list_reg' => 'required|string|max:255',
             ]);
 
             $id = $request->input('id');

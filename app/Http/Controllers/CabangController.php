@@ -155,4 +155,11 @@ class CabangController extends Controller
 
         return response()->json(['cabang_id' => $newCabangId]);
     }
+
+    public function getcabang()
+    {
+        $cabang = Cabang::select('cabang_id', 'nama')->get();
+
+        return response()->json($cabang);
+    }
 }

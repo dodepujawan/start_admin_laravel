@@ -56,7 +56,7 @@
                 {{-- Edit List Register --}}
                 @php
                 $user = Auth::user();
-                $allowedRoles = ['programmer', 'super_admin'];
+                $allowedRoles = ['admin'];
                 @endphp
 
                 @if (in_array($user->roles, $allowedRoles))
@@ -69,7 +69,7 @@
                 {{-- Create Cabang --}}
                 @php
                 $user = Auth::user();
-                $allowedRoles = ['programmer', 'super_admin'];
+                $allowedRoles = ['admin'];
                 @endphp
 
                 @if (in_array($user->roles, $allowedRoles))

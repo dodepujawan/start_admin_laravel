@@ -51,6 +51,7 @@ Route::prefix('cabang')->middleware('auth')->group(function () {
     Route::get('/', [CabangController::class, 'index'])->name('index_cabang');
     Route::get('/cabang_id', [CabangController::class, 'generate_cabang_id'])->name('generate_cabang_id');
     Route::post('/store', [CabangController::class, 'store'])->name('store_cabang');
+    Route::get('/api/cabang', [CabangController::class, 'getcabang'])->name('get_cabang_api');
 });
 
 Route::prefix('home')->group(function () {
