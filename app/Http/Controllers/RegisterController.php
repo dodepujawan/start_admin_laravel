@@ -188,20 +188,38 @@ class RegisterController extends Controller
                 'name' => 'required|string|max:255',
                 'password' => 'nullable|string|min:8',
                 'roles_list_reg' => 'required|string|max:255',
+                // 'cabang_list_reg' => 'string|max:255',
             ]);
 
             $id = $request->input('id');
             $user = User::find($id);
 
-            // Update user details
+            // ### Update user details
             $user->email = $request->email;
             $user->name = $request->name;
             if ($request->password) {
                 $user->password = Hash::make($request->password);
             }
-            $user->roles = $request->roles;
+            // ### update roles
+            $roleMapping = [
+                'AD' => 'admin',
+                'ST' => 'staff',
+                'CS' => 'customer',
+            ];
+            $role = $request->roles_list_reg;
+            // Konversi nilai role menggunakan mapping, apabila tidak ada ubah nilai jadi customer
+            $roleName = $roleMapping[$role] ?? 'customer';
+            if($user->roles != $roleName){
+            // Buat request untuk generate_user_id
+            $generateRequest = new Request(['roles_list_reg' => $role]);
+            // Panggil metode generateUserId untuk mendapatkan user_id
+            $userIdResponse = $this->generate_user_id($generateRequest);
+            $userId = $userIdResponse->getData()->user_id;
+            $user->user_id = $userId;
+            $user->roles = $roleName;
+            }
+            $user->rcabang = $request->cabang_list_reg;
             $user->save();
-
             DB::commit();
             $result['pesan'] = 'Update Berhasil.';
         } catch (\Illuminate\Validation\ValidationException $e) {

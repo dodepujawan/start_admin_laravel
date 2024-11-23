@@ -1,0 +1,231 @@
+function collectTableData() {
+    let transaksiData = [];
+
+    // Iterasi setiap baris di dalam tbody
+    $('#transaksi_table tbody tr').each(function() {
+        let row = $(this); // Ambil baris saat ini
+
+        // Ambil nilai dari setiap kolom
+        let kdBarang = row.find('td:nth-child(2)').text();
+        let namaBarang = row.find('td:nth-child(3)').text();
+        let hargaBarang = parseFloat(row.find('td:nth-child(4)').text()) || 0;
+        let jumlahTrans = parseFloat(row.find('td:nth-child(5)').text()) || 0;
+        let diskonBarang = parseFloat(row.find('td:nth-child(6)').text()) || 0;
+        let total = parseFloat(row.find('td:nth-child(7)').text()) || 0;
+
+        // Tambahkan data baris ke array
+        transaksiData.push({
+            kd_barang: kdBarang,
+            nama: namaBarang,
+            harga: hargaBarang,
+            jumlah: jumlahTrans,
+            diskon: diskonBarang,
+            total: total,
+        });
+    });
+
+    return transaksiData; // Return array data transaksi
+}
+
+<!-- kirim melalui ajax -->
+$('form').on('submit', function(event) {
+    event.preventDefault(); // Mencegah submit form standar
+
+    // Kumpulkan data dari tabel
+    let transaksiData = collectTableData();
+
+    // Validasi jika tidak ada data
+    if (transaksiData.length === 0) {
+        alert('Tidak ada data transaksi untuk disimpan!');
+        return;
+    }
+
+    // Kirim data melalui AJAX
+    $.ajax({
+        url: '/submit-transaksi', // Ganti dengan URL endpoint Anda
+        method: 'POST',
+        data: {
+            _token: $('meta[name="csrf-token"]').attr('content'), // Tambahkan CSRF token jika menggunakan Laravel
+            transaksi: transaksiData, // Kirim array data transaksi
+        },
+        success: function(response) {
+            alert('Data transaksi berhasil disimpan!');
+            // Reset tabel atau redirect jika diperlukan
+            $('#transaksi_table tbody').empty();
+            $('#grand_total').text('0');
+        },
+        error: function(xhr) {
+            alert('Terjadi kesalahan saat menyimpan data transaksi!');
+            console.error(xhr.responseText);
+        }
+    });
+});
+
+<!-- controller -->
+public function submitTransaksi(Request $request)
+{
+    // Validasi input
+    $validated = $request->validate([
+        'transaksi' => 'required|array',
+        'transaksi.*.kd_barang' => 'required|string',
+        'transaksi.*.nama' => 'required|string',
+        'transaksi.*.harga' => 'required|numeric',
+        'transaksi.*.jumlah' => 'required|numeric',
+        'transaksi.*.diskon' => 'required|numeric',
+        'transaksi.*.total' => 'required|numeric',
+    ]);
+
+    // Masukkan data ke database
+    foreach ($request->transaksi as $transaksi) {
+        DB::table('po_order')->insert([
+            'kd_barang' => $transaksi['kd_barang'],
+            'nama' => $transaksi['nama'],
+            'harga' => $transaksi['harga'],
+            'jumlah' => $transaksi['jumlah'],
+            'diskon' => $transaksi['diskon'],
+            'total' => $transaksi['total'],
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+    }
+
+    return response()->json(['message' => 'Data transaksi berhasil disimpan'], 200);
+}
+
+<!-- versi lock -->
+use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
+
+class TransaksiController extends Controller
+{
+    public function simpanTransaksi(Request $request)
+    {
+        // Validasi data request
+        $request->validate([
+            'transaksi' => 'required|array|min:1',
+            'transaksi.*.kd_barang' => 'required|string',
+            'transaksi.*.nama' => 'required|string',
+            'transaksi.*.harga' => 'required|numeric|min:0',
+            'transaksi.*.jumlah' => 'required|integer|min:1',
+            'transaksi.*.diskon' => 'nullable|numeric|min:0',
+            'transaksi.*.total' => 'required|numeric|min:0',
+        ], [
+            'transaksi.required' => 'Transaksi tidak boleh kosong.',
+            'transaksi.*.kd_barang.required' => 'Kode barang harus diisi.',
+            'transaksi.*.nama.required' => 'Nama barang harus diisi.',
+            'transaksi.*.harga.required' => 'Harga barang harus diisi.',
+            'transaksi.*.jumlah.required' => 'Jumlah barang harus diisi.',
+            'transaksi.*.total.required' => 'Total harus diisi.',
+        ]);
+
+        DB::beginTransaction();
+
+        try {
+            // Generate bulan dan tahun untuk invoice
+            $bulan = now()->format('m');
+            $tahun = now()->format('y');
+
+            // Dapatkan invoice terakhir dengan locking
+            $lastInvoice = DB::table('po_order')
+                ->where('invoice', 'like', $bulan . $tahun . '-%')
+                ->orderBy('invoice', 'desc')
+                ->lockForUpdate()
+                ->value('invoice');
+
+            // Tentukan nomor urut baru
+            $newNumber = 1;
+            if ($lastInvoice) {
+                $lastNumber = (int)substr($lastInvoice, -5);
+                $newNumber = $lastNumber + 1;
+            }
+
+            $invoiceNumber = sprintf('%s%s-%05d', $bulan, $tahun, $newNumber);
+
+            // Simpan setiap transaksi ke database
+            foreach ($request->transaksi as $transaksi) {
+                DB::table('po_order')->insert([
+                    'invoice' => $invoiceNumber,
+                    'kd_barang' => $transaksi['kd_barang'],
+                    'nama' => $transaksi['nama'],
+                    'harga' => $transaksi['harga'],
+                    'jumlah' => $transaksi['jumlah'],
+                    'diskon' => $transaksi['diskon'] ?? 0,
+                    'total' => $transaksi['total'],
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
+
+            DB::commit(); // Commit jika semua berhasil
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Transaksi berhasil disimpan!',
+                'invoice' => $invoiceNumber,
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack(); // Rollback jika ada error
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+}
+<!-- versi ajax ke 2 -->
+$('form').on('submit', function (event) {
+    event.preventDefault();
+
+    let isValid = true;
+    let errorMessage = '';
+
+    $('#transaksi_table tbody tr').each(function () {
+        let kdBarang = $(this).find('td:nth-child(2)').text();
+        let nama = $(this).find('td:nth-child(3)').text();
+        let harga = parseFloat($(this).find('td:nth-child(4)').text()) || 0;
+        let jumlah = parseInt($(this).find('td:nth-child(5)').text()) || 0;
+        let total = parseFloat($(this).find('td:nth-child(7)').text()) || 0;
+
+        if (!kdBarang || !nama || harga === 0 || jumlah === 0 || total === 0) {
+            isValid = false;
+            errorMessage = 'Mohon lengkapi semua data di tabel transaksi.';
+            return false; // Hentikan iterasi
+        }
+    });
+
+    if (!isValid) {
+        alert(errorMessage);
+        return;
+    }
+
+    // Kirim data via AJAX
+    let transaksiData = [];
+    $('#transaksi_table tbody tr').each(function () {
+        transaksiData.push({
+            kd_barang: $(this).find('td:nth-child(2)').text(),
+            nama: $(this).find('td:nth-child(3)').text(),
+            harga: parseFloat($(this).find('td:nth-child(4)').text()),
+            jumlah: parseInt($(this).find('td:nth-child(5)').text()),
+            diskon: parseFloat($(this).find('td:nth-child(6)').text()) || 0,
+            total: parseFloat($(this).find('td:nth-child(7)').text()),
+        });
+    });
+
+    $.ajax({
+        url: '/transaksi/simpan',
+        method: 'POST',
+        data: {
+            transaksi: transaksiData,
+            _token: $('meta[name="csrf-token"]').attr('content'),
+        },
+        success: function (response) {
+            alert(response.message);
+            if (response.status === 'success') {
+                window.location.reload(); // Refresh halaman setelah sukses
+            }
+        },
+        error: function (xhr) {
+            alert('Terjadi kesalahan: ' + xhr.responseJSON.message);
+        },
+    });
+});

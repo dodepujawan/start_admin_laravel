@@ -52,8 +52,8 @@
                     {{ session('message') }}
                 </div>
                 @endif --}}
-                <h3 id="message"></h3>
-                <form action="" id="editListRegisterForm" method="post">
+                <h3 id="message_list_register"></h3>
+                <form action="" id="editListRegisterForm" method="POST">
                     @csrf
                     <input type="text" name="id" id="id" class="form-control" value="" required="" readonly>
                     <div class="form-group">
@@ -77,9 +77,9 @@
                             <option value="CS">Customer</option>
                        </select>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" id="cabang_list_register_group">
                         <label><i class="fa fa-address-book"></i> Cabang</label>
-                        <input type="text" name="cabang_flag" id="cabang_flag" class="form-control" value="" readonly>
+                        <input type="hidden" name="cabang_flag" id="cabang_flag" class="form-control" value="" readonly>
                         <select name="cabang_list_reg" id="cabang_list_reg" class="form-control">
                         </select>
                     </div>
@@ -159,7 +159,6 @@ $(document).ready(function() {
                 $('#cabang_flag').val(data.rcabang);
                 calling_roles_first();
                 select_cabang();
-                $('#cabang_list_reg').val(data.rcabang);
                 // Tampilkan form
                 $('#formtable').hide();
                 $('#formedit').removeClass('d-none');
@@ -187,36 +186,50 @@ $(document).ready(function() {
             url: "{{ route('get_cabang_api') }}",
             dataType: 'json',
             success: function(cabang_data) {
-                // Menambahkan opsi cabang ke dalam select
-                cabang_data.forEach(function(item) {
-                    $('#cabang_list_reg').append(new Option(item.nama, item.cabang_id));
+                var options = '<option value="">Pilih Cabang</option>';
+                $.each(cabang_data, function(index, cabang) {
+                    options += '<option value="' + cabang.cabang_id + '">' + cabang.nama + '</option>';
                 });
+                $('#cabang_list_reg').html(options);
+                var pilih_cabang_auto = $('#cabang_flag').val();
+                $('#cabang_list_reg').val(pilih_cabang_auto);
             }
         });
-    }
+    };
 
-    function pick_cabang(){
-        var pilih_cabang_auto = $('#cabang_flag').val();
-        $('#cabang_list_reg').val(pilih_cabang_auto);
-    }
+    // ### Function To Hide Cabang
+    $('#roles_list_reg').on('change', function() {
+        var roles = $(this).val();
+
+        if (roles === 'CS') {
+            $('#cabang_list_reg').val(''); // Reset nilai select ke default
+            $('#cabang_list_register_group').hide(); // Sembunyikan grup cabang
+        } else {
+            $('#cabang_list_register_group').show(); // Tampilkan grup cabang untuk role lain
+        }
+    });
 
     // ========================== end of edit list user ===============================
     // ========================== update list user ===============================
     $(document).off('submit', '#editListRegisterForm');
 
     $(document).on('submit', '#editListRegisterForm', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log('Form submitted');
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             }
         });
-        e.preventDefault();
-        e.stopPropagation();
+        let formData = $(this).serialize();
+        console.log('Form data:', formData);
         $.ajax({
             url: '{{ route('update_list_register') }}', // Route to handle form submission
             type: 'POST',
-            data: $(this).serialize(),
+            data: formData,
             success: function(response) {
+                console.log('Success:', response);
                 $('#formedit').addClass('d-none');
                 $('#formtable').show();
 
@@ -229,7 +242,8 @@ $(document).ready(function() {
                 });
             },
             error: function(response) {
-                $('#message').html('<p>' + response.responseJSON.pesan + '</p>');
+                console.error('Error:', xhr.responseText);
+                $('#message_list_register').html('<p>' + response.responseJSON.pesan + '</p>');
             }
         });
     });
